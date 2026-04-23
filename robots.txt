@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /api/
+
+Sitemap: https://davidbalan.dev/sitemap.xml
+

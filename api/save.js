@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+const crypto = require('crypto');
 
 function base64urlEncode(input) {
   const buf = Buffer.isBuffer(input) ? input : Buffer.from(input);
@@ -53,7 +53,7 @@ function verifyToken(authHeader, secret) {
   return { ok: true };
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'PUT' && req.method !== 'POST') {
     res.setHeader('Allow', 'PUT, POST');
     return res.status(405).json({ error: 'Method not allowed' });
@@ -73,7 +73,21 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server not configured (missing JB_BIN/JB_KEY)' });
   }
 
-  const body = req.body;
+  const body = await (async () => {
+    if (req.body && typeof req.body === 'object') return req.body;
+    if (typeof req.body === 'string') {
+      try { return JSON.parse(req.body); } catch { return null; }
+    }
+    const raw = await new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', chunk => { data += chunk; });
+      req.on('end', () => resolve(data));
+      req.on('error', reject);
+    });
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+  })();
+
   if (!body || typeof body !== 'object') {
     return res.status(400).json({ error: 'Expected JSON object body' });
   }
@@ -93,5 +107,4 @@ export default async function handler(req, res) {
   } catch {
     return res.status(500).json({ error: 'Failed to save data' });
   }
-}
-
+};

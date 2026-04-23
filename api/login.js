@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+const crypto = require('crypto');
 
 function base64urlEncode(input) {
   const buf = Buffer.isBuffer(input) ? input : Buffer.from(input);
@@ -21,7 +21,24 @@ function sign(payloadB64, secret) {
   return base64urlEncode(sig);
 }
 
-export default async function handler(req, res) {
+async function readJsonBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body;
+  if (typeof req.body === 'string') {
+    try { return JSON.parse(req.body); } catch { return null; }
+  }
+
+  const raw = await new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', chunk => { data += chunk; });
+    req.on('end', () => resolve(data));
+    req.on('error', reject);
+  });
+
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
@@ -32,8 +49,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server not configured (missing ADMIN_SECRET)' });
   }
 
-  const password = (req.body && typeof req.body === 'object' ? req.body.password : null) || '';
-  const supplied = String(password);
+  const body = await readJsonBody(req);
+  const supplied = String(body?.password ?? '');
 
   if (!timingSafeEqual(supplied, String(adminSecret))) {
     return res.status(401).json({ error: 'Invalid password' });
@@ -43,5 +60,4 @@ export default async function handler(req, res) {
   const payloadB64 = base64urlEncode(JSON.stringify({ exp }));
   const sigB64 = sign(payloadB64, adminSecret);
   return res.status(200).json({ token: `${payloadB64}.${sigB64}`, exp });
-}
-
+};
