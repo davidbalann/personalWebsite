@@ -188,6 +188,38 @@
   }
   .tag-remove { cursor: pointer; color: var(--muted); font-size: 0.8rem; line-height: 1; }
   .tag-remove:hover { color: var(--danger); }
+
+  /* Skill chips with source editing */
+  .skill-chip { cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; }
+  .skill-chip.has-source { border-color: var(--accent); }
+  .skill-chip.has-source::before {
+    content: ''; display: inline-block;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); margin-right: 0.35rem;
+  }
+  .skill-chip.selected {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent);
+  }
+  .skill-chip.selected .tag-remove { color: var(--bg); opacity: 0.8; }
+  .skill-chip.selected .tag-remove:hover { color: var(--bg); opacity: 1; }
+  .skill-chip.selected.has-source::before { background: var(--bg); }
+
+  .skill-edit-panel {
+    margin-top: 0.75rem;
+    padding: 0.9rem 1rem 1rem;
+    border: 1px solid var(--border-h);
+    background: var(--bg2);
+  }
+  .skill-edit-title {
+    font-family: var(--mono); font-size: 0.62rem;
+    color: var(--muted); letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 0.75rem;
+  }
+  .skill-edit-title strong { color: var(--text); font-weight: 500; text-transform: none; letter-spacing: 0; }
+  .skill-edit-panel .field { margin-bottom: 0.7rem; }
+  .skill-edit-panel .field:last-of-type { margin-bottom: 0.85rem; }
+  .skill-edit-actions { display: flex; gap: 0.5rem; }
   .tag-add-row { display: flex; gap: 0.5rem; }
   .tag-add-row input { flex: 1; font-family: var(--mono); font-size: 0.78rem; padding: 0.35rem 0.6rem; border: 1px solid var(--border-h); background: var(--surface); color: var(--text); outline: none; }
   .tag-add-row input:focus { border-color: var(--accent); }
@@ -812,15 +844,129 @@
     {key:'devops',    label:'DevOps & Backend'}
   ];
 
+  // Currently-selected skill for editing: {group: string, idx: number} | null
+  let selectedSkill = null;
+
+  // Normalize a single skill entry to {name, source}
+  function normalizeSkill(s) {
+    if (typeof s === 'string') return { name: s, source: '' };
+    if (s && typeof s === 'object') return { name: s.name || '', source: s.source || '' };
+    return { name: '', source: '' };
+  }
+
+  // Migrate data.skills from legacy strings to {name, source} objects.
+  function migrateSkillsData() {
+    if (!data || !data.skills) return;
+    SKILL_GROUPS.forEach(g => {
+      const arr = data.skills[g.key] || [];
+      data.skills[g.key] = arr.map(normalizeSkill);
+    });
+  }
+
+  function skillChipHtml(groupKey, idx, skill) {
+    const isSel = selectedSkill && selectedSkill.group === groupKey && selectedSkill.idx === idx;
+    const hasSrc = !!(skill.source && skill.source.trim());
+    const cls = `tag-chip skill-chip${isSel?' selected':''}${hasSrc?' has-source':''}`;
+    // event.stopPropagation on the × prevents the chip's click handler from firing.
+    return `<span class="${cls}" onclick="selectSkill('${groupKey}',${idx})">`
+      + `${escHtml(skill.name || '(unnamed)')}`
+      + `<span class="tag-remove" onclick="event.stopPropagation();removeSkill('${groupKey}',${idx})">×</span>`
+      + `</span>`;
+  }
+
+  function skillEditPanelHtml(groupKey, idx, skill) {
+    return `
+      <div class="skill-edit-panel">
+        <div class="skill-edit-title">Editing skill: <strong>${escHtml(skill.name||'(unnamed)')}</strong></div>
+        <div class="field">
+          <label>Skill name</label>
+          <input type="text" value="${escHtml(skill.name)}"
+                 oninput="updateSkillField('${groupKey}',${idx},'name',this.value)">
+        </div>
+        <div class="field">
+          <label>Where I gained this skill (hover tooltip)</label>
+          <input type="text" value="${escHtml(skill.source)}"
+                 placeholder="e.g. CoffeeBot Firmware · CleanShare"
+                 oninput="updateSkillField('${groupKey}',${idx},'source',this.value)">
+          <div class="field-hint">Shown as a tooltip when visitors hover the skill on the public site. Leave blank for no tooltip.</div>
+        </div>
+        <div class="skill-edit-actions">
+          <button class="btn" onclick="selectSkill(null,null)">Done</button>
+        </div>
+      </div>`;
+  }
+
   function renderSkillsPanel() {
     const panel = document.getElementById('skills-panel');
     if (!panel) return;
-    panel.innerHTML = SKILL_GROUPS.map((g,gi) =>
-      `${gi>0?'<div class="divider"></div>':''}
-       <div class="field">
-         <label>${g.label}</label>
-         ${tagEditorHtml('skills',0,g.key,data.skills[g.key]||[])}
-       </div>`).join('');
+    panel.innerHTML = SKILL_GROUPS.map((g,gi) => {
+      const skills = (data.skills && data.skills[g.key]) || [];
+      const chips = skills.map((s,si) => skillChipHtml(g.key, si, s)).join('');
+      const editor = (selectedSkill && selectedSkill.group === g.key && skills[selectedSkill.idx])
+        ? skillEditPanelHtml(g.key, selectedSkill.idx, skills[selectedSkill.idx])
+        : '';
+      return `
+        ${gi>0?'<div class="divider"></div>':''}
+        <div class="field">
+          <label>${g.label}</label>
+          <div class="tags-editor">${chips}</div>
+          <div class="tag-add-row">
+            <input type="text" id="skill-add-${g.key}" placeholder="Add skill…"
+                   onkeydown="if(event.key==='Enter'){addSkill('${g.key}');event.preventDefault()}">
+            <button class="btn add" onclick="addSkill('${g.key}')">+</button>
+          </div>
+          ${editor}
+        </div>`;
+    }).join('');
+  }
+
+  function addSkill(groupKey) {
+    const inp = document.getElementById(`skill-add-${groupKey}`);
+    if (!inp) return;
+    const val = inp.value.trim();
+    if (!val) return;
+    inp.value = '';
+    data.skills = data.skills || {};
+    data.skills[groupKey] = data.skills[groupKey] || [];
+    data.skills[groupKey].push({ name: val, source: '' });
+    renderSkillsPanel();
+    const focusEl = document.getElementById(`skill-add-${groupKey}`);
+    if (focusEl) focusEl.focus();
+  }
+
+  function removeSkill(groupKey, idx) {
+    if (!data.skills || !data.skills[groupKey]) return;
+    data.skills[groupKey].splice(idx, 1);
+    // Fix up selection if affected by the removal
+    if (selectedSkill && selectedSkill.group === groupKey) {
+      if (selectedSkill.idx === idx) selectedSkill = null;
+      else if (selectedSkill.idx > idx) selectedSkill.idx -= 1;
+    }
+    renderSkillsPanel();
+  }
+
+  function selectSkill(groupKey, idx) {
+    if (groupKey === null || groupKey === 'null') {
+      selectedSkill = null;
+    } else if (selectedSkill && selectedSkill.group === groupKey && selectedSkill.idx === idx) {
+      // Clicking the same chip deselects
+      selectedSkill = null;
+    } else {
+      selectedSkill = { group: groupKey, idx: idx };
+    }
+    renderSkillsPanel();
+    // Restore focus to the source input for quick editing
+    if (selectedSkill) {
+      const inputs = document.querySelectorAll('.skill-edit-panel input');
+      if (inputs.length >= 2) inputs[1].focus();
+    }
+  }
+
+  // Updates data in-place without re-rendering (to avoid stealing input focus).
+  // The chip label will refresh when the editor is closed or another chip is selected.
+  function updateSkillField(groupKey, idx, field, value) {
+    if (!data.skills || !data.skills[groupKey] || !data.skills[groupKey][idx]) return;
+    data.skills[groupKey][idx][field] = value;
   }
 
   // ── RENDER ALL ──
@@ -837,6 +983,7 @@
     renderEduList();
     renderProjectsList();
     renderExperienceList();
+    migrateSkillsData();
     renderSkillsPanel();
     renderCourseworkList();
     const n = data.now||{};
@@ -918,6 +1065,8 @@
   window.addExperience = addExperience; window.deleteExperience = deleteExperience; window.moveExp = moveExp;
   window.addBullet = addBullet; window.deleteBullet = deleteBullet;
   window.addTag = addTag; window.removeTag = removeTag;
+  window.addSkill = addSkill; window.removeSkill = removeSkill;
+  window.selectSkill = selectSkill; window.updateSkillField = updateSkillField;
   window.addNowBullet = addNowBullet; window.deleteNowBullet = deleteNowBullet; window.refreshNowBullets = refreshNowBullets;
   window.saveAll = saveAll;
 

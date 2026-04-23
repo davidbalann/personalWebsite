@@ -925,6 +925,37 @@
   }
   .currently-val span { color: var(--muted); font-size: 0.82rem; }
 
+  /* Currently + Now side-by-side row */
+  .currently-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+    align-items: stretch;
+  }
+  .currently-row .about-currently { margin-top: 0; }
+  .currently-row .now-box { margin-top: 0 !important; }
+  /* Now-box bullet styling */
+  .now-bullets {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 0.35rem;
+  }
+  .now-bullets li {
+    position: relative;
+    padding-left: 0.9rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .now-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.55em;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--accent);
+  }
+
   .lang-flags {
     display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap;
   }
@@ -1134,6 +1165,7 @@
     .skills-grid { grid-template-columns: repeat(2, 1fr); }
     .hero-metrics { display: none; }
     .nav-links { gap: 1.25rem; }
+    .currently-row { grid-template-columns: 1fr; gap: 1.25rem; }
   }
 </style>
 </head>
@@ -1299,16 +1331,18 @@
       <p>I'm a <strong>3rd-year Computer Science student at Queen's University</strong> specialising in AI — currently on exchange at the University of Manchester. I think in systems: how components compose, where performance is lost, and how software meets the physical world.</p>
       <p>My work spans <strong>embedded firmware, computer vision pipelines, and full-stack applications</strong> — with a focus on correctness, efficiency, and real-world impact over theoretical elegance.</p>
       <p>Dean's List 2024–25. Mayor's Award at KingHacks 2026. Two-time VEX Robotics World Championship competitor. Firmware shipped at Neuronicworks.</p>
-      <div class="about-currently">
-        <div class="currently-dot"></div>
-        <div>
-          <div class="currently-label">Currently</div>
-          <div class="currently-val" id="currently-val">Semester abroad at <strong>University of Manchester</strong> <span>· Jan – June 2026</span></div>
+      <div class="currently-row">
+        <div class="about-currently">
+          <div class="currently-dot"></div>
+          <div>
+            <div class="currently-label">Currently</div>
+            <div class="currently-val" id="currently-val">Semester abroad at <strong>University of Manchester</strong> <span>· Jan – June 2026</span></div>
+          </div>
         </div>
-      </div>
-      <div class="now-box" id="now-box" style="margin-top:1.25rem; border:1px solid var(--border); padding:1rem 1.25rem; display:none;">
-        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.75rem;">Now</div>
-        <div style="display:flex;flex-direction:column;gap:0.5rem;" id="now-rows"></div>
+        <div class="now-box" id="now-box" style="border:1px solid var(--border); padding:1rem 1.25rem; display:none;">
+          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.75rem;">Now</div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;" id="now-rows"></div>
+        </div>
       </div>
 
       <div class="lang-flags">
@@ -1564,7 +1598,7 @@
   <div class="skills-grid">
     <div class="skill-group reveal">
       <div class="skill-group-label">Languages</div>
-      <div class="skill-tags">
+      <div class="skill-tags" id="skill-g-languages">
         <span class="skill-tag">C / C++</span>
         <span class="skill-tag">Python</span>
         <span class="skill-tag">TypeScript</span>
@@ -1575,7 +1609,7 @@
     </div>
     <div class="skill-group reveal reveal-delay-1">
       <div class="skill-group-label">Systems & Embedded</div>
-      <div class="skill-tags">
+      <div class="skill-tags" id="skill-g-systems">
         <span class="skill-tag" data-tip="CoffeeBot Firmware">ESP32</span>
         <span class="skill-tag" data-tip="CoffeeBot · CleanShare">I²C</span>
         <span class="skill-tag" data-tip="CleanShare">Qt</span>
@@ -1586,7 +1620,7 @@
     </div>
     <div class="skill-group reveal reveal-delay-2">
       <div class="skill-group-label">AI / ML</div>
-      <div class="skill-tags">
+      <div class="skill-tags" id="skill-g-ai">
         <span class="skill-tag" data-tip="CleanShare">OpenCV</span>
         <span class="skill-tag" data-tip="CleanShare · VEX Robotics">YOLOv11</span>
         <span class="skill-tag" data-tip="CleanShare · FaceCrypt">ONNX Runtime</span>
@@ -1597,7 +1631,7 @@
     </div>
     <div class="skill-group reveal reveal-delay-3">
       <div class="skill-group-label">DevOps & Backend</div>
-      <div class="skill-tags">
+      <div class="skill-tags" id="skill-g-devops">
         <span class="skill-tag" data-tip="Kingston CareMap">FastAPI</span>
         <span class="skill-tag" data-tip="Kingston CareMap">React</span>
         <span class="skill-tag">Docker</span>
@@ -1787,26 +1821,49 @@
     }
     // Skills
     if (d.skills) {
+      // Escape text for safe insertion into HTML attributes.
+      const escAttr = (s) => String(s)
+        .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+        .replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      // A skill entry may be either a plain string (legacy) or {name, source}.
+      const renderSkill = (t) => {
+        const name = (t && typeof t === 'object') ? (t.name || '') : String(t);
+        const source = (t && typeof t === 'object' && t.source) ? t.source : '';
+        const tip = source && source.trim() ? ` data-tip="${escAttr(source)}"` : '';
+        return `<span class="skill-tag"${tip}>${name}</span>`;
+      };
       [['languages','skill-g-languages'],['systems','skill-g-systems'],['ai','skill-g-ai'],['devops','skill-g-devops']].forEach(([k,id])=>{
         const el = document.getElementById(id);
-        if (el && d.skills[k]) el.innerHTML = d.skills[k].map(t=>`<span class="skill-tag">${t}</span>`).join('');
+        if (el && d.skills[k]) el.innerHTML = d.skills[k].map(renderSkill).join('');
       });
     }
     // Now
     if (d.now) {
+      // Normalize each field to an array of non-empty strings.
+      // Admin may save arrays (bullet lists) OR legacy single strings.
+      const normalize = (v) => {
+        if (Array.isArray(v)) return v.filter(x => x && String(x).trim());
+        if (v && String(v).trim()) return [String(v)];
+        return [];
+      };
       const fields = [
-        { key: 'BUILDING', val: d.now.building },
-        { key: 'READING',  val: d.now.reading  },
-        { key: 'DOING',    val: d.now.doing    },
-      ].filter(f => f.val);
+        { key: 'BUILDING', items: normalize(d.now.building) },
+        { key: 'READING',  items: normalize(d.now.reading)  },
+        { key: 'DOING',    items: normalize(d.now.doing)    },
+      ].filter(f => f.items.length);
       const box = document.getElementById('now-box');
       const rows = document.getElementById('now-rows');
       if (box && rows && fields.length) {
-        rows.innerHTML = fields.map(f => `
-          <div style="display:flex;gap:1rem;align-items:baseline;">
-            <span style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;width:58px;">${f.key}</span>
-            <span style="font-size:0.82rem;color:var(--muted);line-height:1.45;">${f.val}</span>
-          </div>`).join('');
+        rows.innerHTML = fields.map(f => {
+          const content = f.items.length === 1
+            ? `<span style="font-size:0.82rem;color:var(--muted);line-height:1.45;">${f.items[0]}</span>`
+            : `<ul class="now-bullets">${f.items.map(it => `<li>${it}</li>`).join('')}</ul>`;
+          return `
+            <div style="display:flex;gap:1rem;align-items:flex-start;">
+              <span style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;width:58px;padding-top:0.15rem;">${f.key}</span>
+              <div style="flex:1;min-width:0;">${content}</div>
+            </div>`;
+        }).join('');
         box.style.display = '';
       }
     }
