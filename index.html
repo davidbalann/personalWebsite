@@ -608,6 +608,89 @@
   .reveal-delay-2 { transition-delay: 0.2s; }
   .reveal-delay-3 { transition-delay: 0.3s; }
 
+  /* ── INTRO OVERLAY ── */
+  #intro-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #07090f;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  #intro-overlay.out {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1);
+  }
+  #intro-inner {
+    width: min(540px, 88vw);
+  }
+  .iline {
+    font-size: 0.72rem;
+    line-height: 2;
+    letter-spacing: 0.045em;
+    white-space: pre;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+  .iline.vis { opacity: 1; transform: translateX(0); }
+  .iline.dim  { color: rgba(220,215,200,0.2); }
+  .iline.mid  { color: rgba(220,215,200,0.45); }
+  .iline.hi   { color: rgba(220,215,200,0.82); font-weight: 500; }
+  .iline.sep  { color: rgba(220,215,200,0.09); }
+  .iline.grn  { color: oklch(0.72 0.16 145); }
+  .iline.org  { color: oklch(0.72 0.16 65); }
+
+  #ibar-track {
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+    margin: 0.9rem 0 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    overflow: hidden;
+  }
+  #ibar-track.vis { opacity: 1; }
+  #ibar-fill {
+    height: 100%;
+    width: 0%;
+    background: oklch(0.72 0.16 145);
+    transition: width 0.9s cubic-bezier(0.22,1,0.36,1);
+  }
+  #iready {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: oklch(0.72 0.16 145);
+    opacity: 0;
+    transition: opacity 0.4s;
+    margin-top: 0.25rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  #iready.vis { opacity: 1; }
+  #iready::before {
+    content: '';
+    display: inline-block;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: oklch(0.72 0.16 145);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  #iskip {
+    position: fixed; bottom: 2rem; right: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.18);
+    cursor: crosshair;
+    transition: color 0.2s;
+    user-select: none;
+    z-index: 10000;
+  }
+  #iskip:hover { color: rgba(255,255,255,0.5); }
+  #iflash {
+    position: fixed; inset: 0; z-index: 10001;
+    background: var(--bg, #f7f6f3);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.14s ease;
+  }
+
   /* ── TWEAKS PANEL ── */
   #tweaks-panel {
     display: none;
@@ -852,7 +935,26 @@
     border: 1px solid var(--border-hover);
     letter-spacing: 0.04em;
   }
-  .lang-flag .flag { font-size: 0.9rem; }
+  .lang-flag .flag {
+    width: 1.15rem;
+    height: 0.82rem;
+    display: inline-block;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+    background-size: cover;
+    background-position: center;
+    flex: 0 0 auto;
+  }
+
+  .flag-gb {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2060%2030'%3E%3Crect%20width='60'%20height='30'%20fill='%23012169'/%3E%3Cpath%20d='M0%200%20L60%2030%20M60%200%20L0%2030'%20stroke='%23FFFFFF'%20stroke-width='6'/%3E%3Cpath%20d='M0%200%20L60%2030%20M60%200%20L0%2030'%20stroke='%23C8102E'%20stroke-width='3'/%3E%3Cpath%20d='M30%200%20V30%20M0%2015%20H60'%20stroke='%23FFFFFF'%20stroke-width='10'/%3E%3Cpath%20d='M30%200%20V30%20M0%2015%20H60'%20stroke='%23C8102E'%20stroke-width='6'/%3E%3C/svg%3E");
+  }
+  .flag-ro {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%202'%3E%3Crect%20width='1'%20height='2'%20x='0'%20fill='%23002B7F'/%3E%3Crect%20width='1'%20height='2'%20x='1'%20fill='%23FCD116'/%3E%3Crect%20width='1'%20height='2'%20x='2'%20fill='%23CE1126'/%3E%3C/svg%3E");
+  }
+  .flag-ru {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%202'%3E%3Crect%20width='3'%20height='0.6667'%20y='0'%20fill='%23FFFFFF'/%3E%3Crect%20width='3'%20height='0.6667'%20y='0.6667'%20fill='%230039A6'/%3E%3Crect%20width='3'%20height='0.6667'%20y='1.3333'%20fill='%23D52B1E'/%3E%3C/svg%3E");
+  }
   .lang-flag .lang-level { color: var(--muted2); font-size: 0.58rem; margin-left: 0.2rem; }
 
   /* ── PROJECT HINDSIGHT OVERLAY ── */
@@ -1037,6 +1139,108 @@
 </head>
 <body>
 
+<!-- INTRO FLASH -->
+<div id="iflash"></div>
+
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <div id="intro-inner">
+    <div id="ilines"></div>
+    <div id="ibar-track"><div id="ibar-fill"></div></div>
+    <div id="iready">READY</div>
+  </div>
+  <div id="iskip">click to skip</div>
+</div>
+
+<script>
+(function () {
+  // Only show once per session
+  if (sessionStorage.getItem('db_intro')) {
+    document.getElementById('intro-overlay').remove();
+    document.getElementById('iflash').remove();
+    return;
+  }
+  document.body.style.overflow = 'hidden';
+
+  const seq = [
+    { t: 'DB.sys · boot sequence',                        cls: 'hi',  ms: 160  },
+    { t: '──────────────────────────────────────────',    cls: 'sep', ms: 380  },
+    { t: '',                                               cls: 'dim', ms: 460  },
+    { t: 'PROC  ·  David Balan',                          cls: 'hi',  ms: 540  },
+    { t: 'INST  ·  B.Computing (AI)  ·  Queen\'s University', cls: 'mid', ms: 720 },
+    { t: 'NET   ·  Manchester  ↔  Kingston, ON',          cls: 'mid', ms: 880  },
+    { t: 'SPEC  ·  Embedded · Systems · Vision',          cls: 'mid', ms: 1020 },
+    { t: '',                                               cls: 'dim', ms: 1140 },
+    { t: '[ firmware         ]   OK',                     cls: 'grn', ms: 1230 },
+    { t: '[ computer_vision  ]   OK',                     cls: 'grn', ms: 1390 },
+    { t: '[ full_stack       ]   OK',                     cls: 'grn', ms: 1540 },
+    { t: '[ creativity       ]   OK',                     cls: 'grn', ms: 1690 },
+    { t: '',                                               cls: 'dim', ms: 1800 },
+  ];
+
+  const container = document.getElementById('ilines');
+
+  seq.forEach(({ t, cls, ms }) => {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'iline ' + cls;
+      el.textContent = t;
+      container.appendChild(el);
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('vis')));
+    }, ms);
+  });
+
+  // Progress bar
+  setTimeout(() => {
+    const track = document.getElementById('ibar-track');
+    track.classList.add('vis');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.getElementById('ibar-fill').style.width = '100%';
+    }));
+  }, 1860);
+
+  // Ready indicator
+  setTimeout(() => {
+    document.getElementById('iready').classList.add('vis');
+  }, 2820);
+
+  function dismiss() {
+    if (dismissed) return;
+    dismissed = true;
+    sessionStorage.setItem('db_intro', '1');
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onKey);
+
+    const flash = document.getElementById('iflash');
+    const overlay = document.getElementById('intro-overlay');
+    const skip = document.getElementById('iskip');
+
+    // Quick flash to page colour, then fade overlay
+    flash.style.opacity = '0.9';
+    setTimeout(() => {
+      flash.style.opacity = '0';
+      overlay.classList.add('out');
+      if (skip) skip.style.opacity = '0';
+    }, 100);
+    setTimeout(() => {
+      overlay.remove();
+      flash.remove();
+      if (skip) skip.remove();
+    }, 720);
+  }
+
+  let dismissed = false;
+  // Auto-dismiss
+  setTimeout(dismiss, 3400);
+
+  // Skip interactions
+  const onKey = () => dismiss();
+  document.addEventListener('keydown', onKey);
+  document.getElementById('intro-overlay').addEventListener('click', dismiss);
+  document.getElementById('iskip').addEventListener('click', e => { e.stopPropagation(); dismiss(); });
+})();
+</script>
+
 <div class="grid-bg"></div>
 <div id="scroll-progress"><div id="scroll-progress-fill"></div></div>
 
@@ -1049,6 +1253,7 @@
     <li><a href="#experience">Experience</a></li>
     <li><a href="#skills">Skills</a></li>
     <li><a href="#contact">Contact</a></li>
+
   </ul>
   <button class="nav-hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   <button class="dark-toggle" id="dark-toggle" aria-label="Toggle dark mode">DARK</button>
@@ -1101,10 +1306,15 @@
           <div class="currently-val" id="currently-val">Semester abroad at <strong>University of Manchester</strong> <span>· Jan – June 2026</span></div>
         </div>
       </div>
+      <div class="now-box" id="now-box" style="margin-top:1.25rem; border:1px solid var(--border); padding:1rem 1.25rem; display:none;">
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.75rem;">Now</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;" id="now-rows"></div>
+      </div>
+
       <div class="lang-flags">
-        <div class="lang-flag"><span class="flag">🇬🇧</span> English <span class="lang-level">FLUENT</span></div>
-        <div class="lang-flag"><span class="flag">🇷🇴</span> Romanian <span class="lang-level">FLUENT</span></div>
-        <div class="lang-flag"><span class="flag">🇷🇺</span> Russian <span class="lang-level">LEARNING</span></div>
+        <div class="lang-flag"><span class="flag flag-gb" role="img" aria-label="United Kingdom"></span> English <span class="lang-level">FLUENT</span></div>
+        <div class="lang-flag"><span class="flag flag-ro" role="img" aria-label="Romania"></span> Romanian <span class="lang-level">FLUENT</span></div>
+        <div class="lang-flag"><span class="flag flag-ru" role="img" aria-label="Russia"></span> Russian <span class="lang-level">LEARNING</span></div>
       </div>
     </div>
     <div class="about-facts reveal reveal-delay-1" id="edu-facts">
@@ -1403,7 +1613,7 @@
 <section id="coursework">
   <div class="section-label">Coursework</div>
   <h2 class="section-title">What I can talk to.</h2>
-  <div class="course-grid">
+  <div class="course-grid" id="course-grid">
     <div class="course-card reveal">
       <div class="course-code">CISC 221</div>
       <div class="course-name">Computer Architecture</div>
@@ -1470,6 +1680,8 @@
   </div>
 </section>
 
+
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-left">David Balan · B.Computing (AI) @ Queen's University · 2027</div>
@@ -1509,6 +1721,7 @@
   const JB_BIN = '69e95f99aaba88219729918a';
   const binId  = JB_BIN;
   const apiKey = JB_KEY;
+  const STORE  = 'dbsys_portfolio_data_v1';
 
   function applyData(d) {
     // About
@@ -1578,6 +1791,34 @@
         const el = document.getElementById(id);
         if (el && d.skills[k]) el.innerHTML = d.skills[k].map(t=>`<span class="skill-tag">${t}</span>`).join('');
       });
+    }
+    // Now
+    if (d.now) {
+      const fields = [
+        { key: 'BUILDING', val: d.now.building },
+        { key: 'READING',  val: d.now.reading  },
+        { key: 'DOING',    val: d.now.doing    },
+      ].filter(f => f.val);
+      const box = document.getElementById('now-box');
+      const rows = document.getElementById('now-rows');
+      if (box && rows && fields.length) {
+        rows.innerHTML = fields.map(f => `
+          <div style="display:flex;gap:1rem;align-items:baseline;">
+            <span style="font-family:var(--mono);font-size:0.58rem;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;width:58px;">${f.key}</span>
+            <span style="font-size:0.82rem;color:var(--muted);line-height:1.45;">${f.val}</span>
+          </div>`).join('');
+        box.style.display = '';
+      }
+    }
+    // Courses
+    if (d.courses && d.courses.length) {
+      const grid = document.getElementById('course-grid');
+      if (grid) grid.innerHTML = d.courses.map(c => `
+        <div class="course-card reveal">
+          <div class="course-code">${c.code}</div>
+          <div class="course-name">${c.name}</div>
+          <div class="course-desc">${c.desc}</div>
+        </div>`).join('');
     }
     // Contact
     if (d.contact) {
