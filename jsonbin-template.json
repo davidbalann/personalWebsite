@@ -1,0 +1,95 @@
+{
+  "about": {
+    "p1": "I'm a <strong>3rd-year Computer Science student at Queen's University</strong> specialising in AI — currently on exchange at the University of Manchester. I think in systems: how components compose, where performance is lost, and how software meets the physical world.",
+    "p2": "My work spans <strong>embedded firmware, computer vision pipelines, and full-stack applications</strong> — with a focus on correctness, efficiency, and real-world impact over theoretical elegance.",
+    "p3": "Dean's List 2024–25. Mayor's Award at KingHacks 2026. Two-time VEX Robotics World Championship competitor. Firmware shipped at Neuronicworks.",
+    "currently": "Semester abroad at <strong>University of Manchester</strong>",
+    "currently_date": "Jan – June 2026",
+    "education": [
+      { "title": "Queen's University, Kingston", "sub": "B.Computing (Honours) — AI Specialisation · GPA 3.72" },
+      { "title": "University of Manchester", "sub": "Semester Abroad · Jan 2026 – June 2026" }
+    ]
+  },
+  "projects": [
+    {
+      "name": "CleanShare",
+      "num": "01",
+      "desc": "Desktop app that detects and blurs sensitive content — alcohol, licence plates — from images using a custom-trained YOLOv11 model and a hybrid C++/Python inference pipeline. Trained on ~1,000 annotated images; processes 1080p in ~5s on CPU-only hardware.",
+      "stack": ["C++", "Qt", "OpenCV", "YOLOv11", "ONNX Runtime", "CMake", "Inno Setup"],
+      "challenge": "Discovered PyTorch → ONNX export inconsistencies mid-project. Implemented a hybrid C++/Python bridge: images pipe from C++ to a Python inference script, bounding boxes return via a temp JSON file — restoring reliable detections without rewriting the Qt pipeline.",
+      "outcome": "~80% detection accuracy · 1080p in ~5s on CPU · packaged for Windows deployment",
+      "hindsight": "I'd investigate the PyTorch → ONNX pipeline earlier — the hybrid C++/Python bridge worked, but a cleaner solution would be to run inference fully in Python as a sidecar process from the start, with a defined IPC contract."
+    },
+    {
+      "name": "CoffeeBot Firmware",
+      "num": "02",
+      "desc": "Firmware for an ESP32 microcontroller monitoring coffee machine usage via an amp sensor. Samples every second, transmits aggregated state over Wi-Fi to a WLAN server every ~5 seconds — networked displays render real-time usage.",
+      "stack": ["C++", "ESP32", "I²C", "Wi-Fi", "State Machine"],
+      "challenge": "Tight memory constraints from the display footprint on the ESP32 — optimised buffer usage and eliminated dynamic allocations to achieve a stable system with near-zero incorrect state displays.",
+      "outcome": "Deployed at Neuronicworks · stable 24/7 operation",
+      "hindsight": "I'd add a lightweight watchdog timer from day one and instrument the state machine with telemetry — debugging edge cases on a deployed ESP32 without visibility is painful."
+    },
+    {
+      "name": "Kingston CareMap",
+      "num": "03",
+      "desc": "Low-data mobile app for Kingston helping users find essential services and food resources under real constraints — limited connectivity, low battery, time pressure. Dual navigation: interactive map + list fallback with need-based filtering.",
+      "stack": ["React", "FastAPI", "Python", "MySQL", "Docker"],
+      "challenge": "Designing a friction-reduction flow that minimises dead ends from stale data — prioritised verified listings, displayed last-updated timestamps, and flagged uncertain details with explicit warnings.",
+      "outcome": "Mayor's Award, KingHacks 2026 — top civic-impact prize",
+      "hindsight": "I'd invest more time in caching the service data locally so the app is fully functional offline — the dual-navigation fallback helped, but true offline-first would have made it far more resilient in the field."
+    },
+    {
+      "name": "FaceCrypt",
+      "num": "04",
+      "desc": "Locally-running biometric encryption tool that uses face detection as a gate to protect sensitive files. Simple Tkinter GUI manages encrypted files and the unlock flow — from idea to demo in 36 hours.",
+      "stack": ["Python", "OpenCV", "face_recognition", "Tkinter", "AES"],
+      "challenge": "Deriving a stable, deterministic encryption key from a high-dimensional face embedding that remains consistent under varying lighting and pose conditions.",
+      "outcome": "Built in 36h · presented to judges at hackathon",
+      "hindsight": "The key derivation from the face embedding was brittle — I'd use a proper fuzzy commitment scheme or a dedicated biometric key derivation library rather than hand-rolling the embedding-to-key mapping."
+    }
+  ],
+  "experience": [
+    {
+      "date": "May – July 2025",
+      "role": "Firmware Developer Intern",
+      "org": "Neuronicworks Inc. · Toronto, ON",
+      "bullets": [
+        "Implemented firmware features enabling reliable comms between displays, sensors, and embedded controllers",
+        "Conducted QA testing across projects, documenting integration issues and collaborating to resolve them per SOPs",
+        "Created detailed test cases and validation reports to reduce debugging turnaround time"
+      ]
+    },
+    {
+      "date": "Sept 2025 – Present",
+      "role": "Teaching Assistant — CISC 204",
+      "org": "Queen's University · Logic for Computer Science",
+      "bullets": [
+        "Led office hours clarifying course concepts and providing targeted assignment feedback",
+        "Supported 50+ students bi-weekly, improving assignment scores by ~10% on average",
+        "Collaborated with instructors to standardise grading and ensure accessible learning support"
+      ]
+    },
+    {
+      "date": "Sept 2023 – Present",
+      "role": "Strategy Lead & CV/AI Integration",
+      "org": "Queen's VEX Robotics Team · Dallas, TX — World Championship",
+      "bullets": [
+        "Trained and integrated YOLOv11 object detection models for real-time game-state perception",
+        "Led Strategy team — analysed competitors and match data to develop match-winning approaches",
+        "Competed at 2024 & 2025 VEX Robotics World Championship; won Build Award, Worlds 2025",
+        "Acted as liaison between the robotics team and Queen's School of Computing faculty"
+      ]
+    }
+  ],
+  "skills": {
+    "languages": ["C / C++", "Python", "TypeScript", "Java", "Bash", "Rust"],
+    "systems": ["ESP32", "I²C", "Qt", "CMake", "GDB", "Kubernetes"],
+    "ai": ["OpenCV", "YOLOv11", "ONNX Runtime", "scikit-learn", "pandas", "NumPy"],
+    "devops": ["FastAPI", "React", "Docker", "MySQL", "Git / GitHub", "CI/CD"]
+  },
+  "contact": {
+    "email": "davidbalann@icloud.com",
+    "github": "github.com/davidbalann",
+    "linkedin": "linkedin.com/in/balan-david"
+  }
+}
