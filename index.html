@@ -1288,6 +1288,7 @@
     <li><a href="#projects">Projects</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#skills">Skills</a></li>
+    <li><a href="#coursework">Coursework</a></li>
     <li><a href="#contact">Contact</a></li>
 
   </ul>
@@ -1886,6 +1887,10 @@
       if (gh) { gh.href = 'https://'+d.contact.github; const v=document.getElementById('contact-github-val'); if(v) v.textContent=d.contact.github; }
       if (li) { li.href = 'https://'+d.contact.linkedin; const v=document.getElementById('contact-linkedin-val'); if(v) v.textContent=d.contact.linkedin; }
     }
+
+    // Newly injected nodes (projects/experience/courses) start hidden by `.reveal`.
+    // Tell the scroll-reveal observer to pick them up.
+    window.dispatchEvent(new Event('__content_updated'));
   }
 
   // Apply local data immediately (server load will overwrite if available)
@@ -1984,14 +1989,19 @@
   }
   typeLoop();
 
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
+  // Scroll reveal (supports dynamic content injection)
+  const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
     });
   }, { threshold: 0.08 });
-  reveals.forEach(el => observer.observe(el));
+
+  function observeReveals() {
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
+  }
+
+  observeReveals();
+  window.addEventListener('__content_updated', observeReveals);
   // Hero is visible immediately
   document.querySelectorAll('#hero .reveal, #hero [class*="hero"]').forEach(el => el.classList.add('visible'));
 
