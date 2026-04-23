@@ -243,18 +243,10 @@
   <div class="login-box">
     <a href="index.html" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:1.5rem;">← Back to site</a>
     <div class="login-logo">DB.sys / admin</div>
-    <div class="login-title">Authentication required</div>
-    <div class="login-sub">Enter your password and date of birth to continue.</div>
-    <div class="login-field">
-      <label>Password</label>
-      <input type="password" id="login-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()">
-    </div>
-    <div class="login-field">
-      <label>Date of Birth</label>
-      <input type="date" id="login-dob" onkeydown="if(event.key==='Enter')tryLogin()">
-    </div>
-    <button class="login-btn" onclick="tryLogin()">Verify Identity</button>
-    <div class="login-error" id="login-error"></div>
+  <div class="login-title">Authentication required</div>
+  <div class="login-sub">Enter your admin password to continue.</div>
+  <button class="login-btn" onclick="tryLogin()">Unlock</button>
+  <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
@@ -375,11 +367,8 @@
  </div>
  
 <script>
-  const JB_KEY = '$2a$10$li/Gy2FaPozoVcHXGeLdeeZGPKHD86P.EMH6KI5IpmNo7OHOOq4hS';
-  const JB_BIN = '69e95f99aaba88219729918a';
   const STORE = 'dbsys_portfolio_data_v1';
-  const AUTH_STORE = 'dbsys_admin_auth_v1';
-  const AUTH_SESSION = 'dbsys_admin_authed';
+  let token = null;
 
   const DEFAULTS = {
     about: {
@@ -493,17 +482,6 @@
     return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function hashLite(s) {
-    let h1 = 0xdeadbeef ^ s.length, h2 = 0x41c6ce57 ^ s.length;
-    for (let i = 0; i < s.length; i++) {
-      const ch = s.charCodeAt(i);
-      h1 = Math.imul(h1 ^ ch, 2654435761);
-      h2 = Math.imul(h2 ^ ch, 1597334677);
-    }
-    h1 = (h1 ^ (h1>>>16)) >>> 0; h2 = (h2 ^ (h2>>>16)) >>> 0;
-    return h1.toString(16).padStart(8,'0') + h2.toString(16).padStart(8,'0');
-  }
-
   function setLoginError(msg) { const el = document.getElementById('login-error'); if (el) el.textContent = msg||''; }
 
   function unlock() {
@@ -514,22 +492,27 @@
     load();
   }
 
-  function tryLogin() {
+  async function tryLogin() {
     setLoginError('');
-    const pw = (document.getElementById('login-pw')?.value||'').trim();
-    const dob = (document.getElementById('login-dob')?.value||'').trim();
-    if (!pw || !dob) { setLoginError('Enter password + DOB.'); return; }
-    const raw = localStorage.getItem(AUTH_STORE);
-    if (!raw) {
-      localStorage.setItem(AUTH_STORE, JSON.stringify({ pw: hashLite(pw), dob }));
-      sessionStorage.setItem(AUTH_SESSION, 'true');
-      unlock(); return;
+    const pw = prompt('Enter admin password:');
+    if (!pw) return;
+
+    try {
+      const r = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      if (!r.ok) {
+        setLoginError('Wrong password.');
+        return;
+      }
+      const j = await r.json();
+      token = j.token;
+      unlock();
+    } catch (e) {
+      setLoginError('Login failed.');
     }
-    let auth = null;
-    try { auth = JSON.parse(raw); } catch { auth = null; }
-    if (!auth?.pw || !auth?.dob) { localStorage.removeItem(AUTH_STORE); setLoginError('Auth data corrupted. Refresh and try again.'); return; }
-    if (auth.pw === hashLite(pw) && auth.dob === dob) { sessionStorage.setItem(AUTH_SESSION, 'true'); unlock(); }
-    else setLoginError('Invalid credentials.');
   }
 
   function switchPanel(name) {
@@ -1002,10 +985,9 @@
 
   async function load() {
     try {
-      const r = await fetch(`https://api.jsonbin.io/v3/b/${JB_BIN}/latest`, { headers: { 'X-Master-Key': JB_KEY } });
+      const r = await fetch('/api/load');
       if (r.ok) {
-        const j = await r.json();
-        data = j.record;
+        data = await r.json();
         if (!data.about) data.about = deepCopy(DEFAULTS.about);
         data.about.education = data.about.education || deepCopy(DEFAULTS.about.education);
         if (!data.projects?.length) data.projects = deepCopy(DEFAULTS.projects);
@@ -1046,9 +1028,10 @@
     const s = document.getElementById('save-status');
     s.textContent = 'Saving…'; s.classList.add('show');
     try {
-      const r = await fetch(`https://api.jsonbin.io/v3/b/${JB_BIN}`, {
+      if (!token) throw new Error('Not authenticated');
+      const r = await fetch('/api/save', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': JB_KEY },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(data)
       });
       s.textContent = r.ok ? '✓ Published globally' : '⚠ Saved locally (API error)';
@@ -1070,7 +1053,7 @@
   window.addNowBullet = addNowBullet; window.deleteNowBullet = deleteNowBullet; window.refreshNowBullets = refreshNowBullets;
   window.saveAll = saveAll;
 
-  if (sessionStorage.getItem(AUTH_SESSION) === 'true') unlock();
+  // Locked by default; click Unlock to authenticate.
 </script>
  </body>
  </html>

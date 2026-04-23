@@ -1751,10 +1751,6 @@
 <script>
 // ── PORTFOLIO DATA LOADER ──
 (function() {
-  const JB_KEY = '$2a$10$li/Gy2FaPozoVcHXGeLdeeZGPKHD86P.EMH6KI5IpmNo7OHOOq4hS';
-  const JB_BIN = '69e95f99aaba88219729918a';
-  const binId  = JB_BIN;
-  const apiKey = JB_KEY;
   const STORE  = 'dbsys_portfolio_data_v1';
 
   function applyData(d) {
@@ -1888,16 +1884,13 @@
     }
   }
 
-  // Try JSONBin first, fall back to localStorage
-  if (binId && apiKey) {
-    fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, { headers: { 'X-Master-Key': apiKey } })
-      .then(r => r.ok ? r.json() : null)
-      .then(j => { if (j) { applyData(j.record); localStorage.setItem(STORE, JSON.stringify(j.record)); } })
-      .catch(() => {});
-  }
-  // Apply local data immediately (JSONBin result will overwrite if faster)
+  // Apply local data immediately (server load will overwrite if available)
   const stored = localStorage.getItem(STORE);
   if (stored) applyData(JSON.parse(stored));
+
+  fetch('/api/load')
+    .then(res => res.json())
+    .then(data => applyData(data));
 })();
 </script>
 
