@@ -7,8 +7,10 @@ A static portfolio site (no build step) plus a lightweight in-browser admin edit
 
 ## What's In This Repo
 
-- `index.html` - the public website (layout + styles + data loader).
-- `admin.html` - the admin editor UI (login gate + editor + save/publish).
+- `index.html` - the public website markup (loads assets from `assets/`).
+- `admin.html` - the admin editor markup (loads assets from `assets/`).
+- `assets/css/` - site stylesheets.
+- `assets/js/` - site scripts.
 - `jsonbin-template.json` - starter data payload for JSONBin (content schema).
 - `uploads/` - assets used by the site.
 
@@ -79,5 +81,5 @@ The admin gate is **not** secure authentication:
 
 Any static host works (GitHub Pages, Netlify, Vercel static, Cloudflare Pages):
 
-- Upload `index.html`, `admin.html`, `uploads/`, and any other assets.
+- Upload `index.html`, `admin.html`, `assets/`, `uploads/`, and any other root assets.
 - Ensure paths (like `David_Balan_CV.pdf`) stay correct relative to `index.html`.
