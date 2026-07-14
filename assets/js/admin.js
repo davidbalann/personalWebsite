@@ -11,7 +11,7 @@ const DEFAULTS = {
       { val: '4', label: 'Projects shipped' }
     ],
     ctaPrimary: { text: 'View Projects', link: '#projects' },
-    ctaCoffee: { text: 'Buy me a coffee', link: 'https://buymeacoffee.com/davidbalan' },
+    ctaCoffee: { text: 'Buy me a coffee', link: 'https://buymeacoffee.com/davidbalan', enabled: true },
     ctaGhost: { text: 'Download CV', link: 'David_Balan_CV.pdf' }
   },
   about: {
@@ -742,12 +742,14 @@ function renderHeroPanel() {
   const ctaPrimaryLink = document.getElementById('hero-cta-primary-link');
   const ctaCoffeeText  = document.getElementById('hero-cta-coffee-text');
   const ctaCoffeeLink  = document.getElementById('hero-cta-coffee-link');
+  const ctaCoffeeEnabled = document.getElementById('hero-cta-coffee-enabled');
   const ctaGhostText   = document.getElementById('hero-cta-ghost-text');
   const ctaGhostLink   = document.getElementById('hero-cta-ghost-link');
   if (ctaPrimaryText) ctaPrimaryText.value = h.ctaPrimary?.text || '';
   if (ctaPrimaryLink) ctaPrimaryLink.value = h.ctaPrimary?.link || '';
   if (ctaCoffeeText)  ctaCoffeeText.value  = h.ctaCoffee?.text  || '';
   if (ctaCoffeeLink)  ctaCoffeeLink.value  = h.ctaCoffee?.link  || '';
+  if (ctaCoffeeEnabled) ctaCoffeeEnabled.checked = h.ctaCoffee?.enabled !== false;
   if (ctaGhostText)   ctaGhostText.value   = h.ctaGhost?.text   || '';
   if (ctaGhostLink)   ctaGhostLink.value   = h.ctaGhost?.link   || '';
   renderTypingWords();
@@ -932,7 +934,8 @@ async function saveAll() {
   };
   data.hero.ctaCoffee = {
     text: document.getElementById('hero-cta-coffee-text').value,
-    link: document.getElementById('hero-cta-coffee-link').value
+    link: document.getElementById('hero-cta-coffee-link').value,
+    enabled: document.getElementById('hero-cta-coffee-enabled').checked
   };
   data.hero.ctaGhost = {
     text: document.getElementById('hero-cta-ghost-text').value,

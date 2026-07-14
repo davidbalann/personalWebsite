@@ -8,7 +8,7 @@
       { "val": "4",    "label": "Projects shipped" }
     ],
     "ctaPrimary": { "text": "View Projects",    "link": "#projects" },
-    "ctaCoffee":  { "text": "Buy me a coffee",  "link": "https://buymeacoffee.com/davidbalan" },
+    "ctaCoffee":  { "text": "Buy me a coffee",  "link": "https://buymeacoffee.com/davidbalan", "enabled": true },
     "ctaGhost":   { "text": "Download CV",       "link": "David_Balan_CV.pdf" }
   },
   "about": {

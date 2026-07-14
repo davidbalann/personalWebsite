@@ -63,7 +63,7 @@ typeLoop();
         ctasEl.innerHTML = `
           <div class="hero-cta-col">
             ${p.text ? `<a href="${escAttr(p.link||'#projects')}" class="btn btn-primary">${escAttr(p.text)}</a>` : ''}
-            ${c.text ? `<a href="${escAttr(c.link||'#')}" class="btn btn-coffee" target="_blank" rel="noopener noreferrer">${escAttr(c.text)}</a>` : ''}
+            ${c.text && c.enabled !== false ? `<a href="${escAttr(c.link||'#')}" class="btn btn-coffee" target="_blank" rel="noopener noreferrer">${escAttr(c.text)}</a>` : ''}
           </div>
           ${g.text ? `<a href="${escAttr(g.link||'David_Balan_CV.pdf')}" download class="btn btn-ghost">${escAttr(g.text)}</a>` : ''}`;
       }
