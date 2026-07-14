@@ -14,10 +14,14 @@
   <div class="login-box">
     <a href="index.html" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:1.5rem;">← Back to site</a>
     <div class="login-logo">DB.sys / admin</div>
-  <div class="login-title">Authentication required</div>
-  <div class="login-sub">Enter your admin password to continue.</div>
-  <button class="login-btn" onclick="tryLogin()">Unlock</button>
-  <div class="login-error" id="login-error"></div>
+    <div class="login-title">Authentication required</div>
+    <div class="login-sub">Enter your admin password to continue.</div>
+    <div class="login-field">
+      <label for="admin-pw">Password</label>
+      <input type="password" id="admin-pw" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryLogin()">
+    </div>
+    <button class="login-btn" onclick="tryLogin()">Unlock</button>
+    <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
@@ -36,7 +40,8 @@
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Sections</div>
-      <a class="sidebar-item active" data-panel="about" onclick="switchPanel('about')">About</a>
+      <a class="sidebar-item active" data-panel="hero" onclick="switchPanel('hero')">Hero</a>
+      <a class="sidebar-item" data-panel="about" onclick="switchPanel('about')">About</a>
       <a class="sidebar-item" data-panel="projects" onclick="switchPanel('projects')">Projects</a>
       <a class="sidebar-item" data-panel="experience" onclick="switchPanel('experience')">Experience</a>
       <a class="sidebar-item" data-panel="skills" onclick="switchPanel('skills')">Skills</a>
@@ -46,33 +51,109 @@
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Actions</div>
-      <a class="sidebar-item" onclick="resetAll()" style="color:var(--danger);">Reset to defaults</a>
+      <a class="sidebar-item" onclick="confirmResetAll()" style="color:var(--danger);">Reset to defaults</a>
     </div>
   </aside>
 
   <main>
 
+    <!-- HERO -->
+    <div class="panel active" id="panel-hero">
+      <div class="panel-title">Hero</div>
+      <div class="panel-sub">Edit the hero section — your name, typing animation words, stat metrics, and CTA buttons.</div>
+
+      <div class="field">
+        <label>Your name (displayed as "First Last." with the last word highlighted)</label>
+        <input type="text" id="hero-name" placeholder="David Balan">
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-sub" style="margin-bottom:0.75rem;">Typing animation</div>
+      <div class="field">
+        <label>Words list</label>
+        <div class="tags-editor" id="typing-words-editor"></div>
+        <div class="tag-add-row" style="margin-top:0.4rem;">
+          <input type="text" id="typing-word-input" placeholder="Add word…" onkeydown="if(event.key==='Enter'){addTypingWord();event.preventDefault()}">
+          <button class="btn add" onclick="addTypingWord()">+</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <div class="panel-sub" style="margin:0;">Hero metrics</div>
+        <button class="btn add" onclick="addMetric()">+ Add Metric</button>
+      </div>
+      <div class="stat-row stat-row-header"><span>Value</span><span>Label</span><span></span></div>
+      <div id="metrics-list"></div>
+
+      <div class="divider"></div>
+      <div class="panel-sub" style="margin-bottom:1rem;">CTA Buttons</div>
+      <div class="field-row">
+        <div class="field"><label>Primary button text</label><input type="text" id="hero-cta-primary-text" placeholder="View Projects"></div>
+        <div class="field"><label>Primary button link</label><input type="text" id="hero-cta-primary-link" placeholder="#projects"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Coffee button text</label><input type="text" id="hero-cta-coffee-text" placeholder="Buy me a coffee"></div>
+        <div class="field"><label>Coffee button link</label><input type="text" id="hero-cta-coffee-link" placeholder="https://buymeacoffee.com/…"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Ghost button text</label><input type="text" id="hero-cta-ghost-text" placeholder="Download CV"></div>
+        <div class="field"><label>Ghost button link / file</label><input type="text" id="hero-cta-ghost-link" placeholder="David_Balan_CV.pdf"></div>
+      </div>
+    </div>
+
     <!-- ABOUT -->
-    <div class="panel active" id="panel-about">
+    <div class="panel" id="panel-about">
       <div class="panel-title">About</div>
-      <div class="panel-sub">Edit the three paragraphs and the "currently" block.</div>
-      <div class="field"><label>Paragraph 1</label><textarea id="about-p1"></textarea></div>
-      <div class="field"><label>Paragraph 2</label><textarea id="about-p2"></textarea></div>
-      <div class="field"><label>Paragraph 3</label><textarea id="about-p3"></textarea></div>
+      <div class="panel-sub">Edit the three paragraphs, the "currently" block, education, languages, and sidebar facts.</div>
+
+      <div class="field">
+        <label>Paragraph 1</label>
+        <div id="toolbar-about-p1">${''}
+        </div>
+        <textarea id="about-p1"></textarea>
+      </div>
+      <div class="field">
+        <label>Paragraph 2</label>
+        <textarea id="about-p2"></textarea>
+      </div>
+      <div class="field">
+        <label>Paragraph 3</label>
+        <textarea id="about-p3"></textarea>
+      </div>
+
       <div class="divider"></div>
       <div class="field-row">
-        <div class="field"><label>Currently (text)</label><input type="text" id="about-currently"></div>
+        <div class="field"><label>Currently (text — supports HTML)</label><input type="text" id="about-currently"></div>
         <div class="field"><label>Currently (date range)</label><input type="text" id="about-currently-date"></div>
       </div>
+
       <div class="divider"></div>
+      <div class="panel-sub" style="margin-bottom:0.75rem;">Education entries (sidebar)</div>
       <div id="edu-list"></div>
       <button class="btn add" onclick="addEdu()">+ Add Education</button>
+
+      <div class="divider"></div>
+      <div class="panel-sub" style="margin-bottom:0.75rem;">Sidebar facts</div>
+      <div class="field">
+        <label>STACK — Primary languages</label>
+        <input type="text" id="about-stack-fact" placeholder="C++, Python, TypeScript — and the tools around them">
+      </div>
+      <div class="field">
+        <label>AWARD — Recognition</label>
+        <input type="text" id="about-award-fact" placeholder="Dean's List · Mayor's Award…">
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-sub" style="margin-bottom:0.75rem;">Languages</div>
+      <div id="languages-list"></div>
+      <button class="btn add" onclick="addLanguage()">+ Add Language</button>
     </div>
 
     <!-- PROJECTS -->
     <div class="panel" id="panel-projects">
       <div class="panel-title">Projects</div>
-      <div class="panel-sub">Drag to reorder is not supported — edit each card below. The first project is always the featured spotlight.</div>
+      <div class="panel-sub">Drag the ⠿ handle to reorder. The project marked as featured appears in the spotlight. Spotlight stats and terminal lines only show for the featured project.</div>
       <div id="projects-list"></div>
       <button class="btn add" onclick="addProject()">+ Add Project</button>
     </div>
@@ -80,7 +161,7 @@
     <!-- EXPERIENCE -->
     <div class="panel" id="panel-experience">
       <div class="panel-title">Experience</div>
-      <div class="panel-sub">Edit roles, dates, organisations and bullet points.</div>
+      <div class="panel-sub">Drag the ⠿ handle to reorder. Location is shown after the organisation name on the public site.</div>
       <div id="experience-list"></div>
       <button class="btn add" onclick="addExperience()">+ Add Role</button>
     </div>
@@ -88,8 +169,16 @@
     <!-- SKILLS -->
     <div class="panel" id="panel-skills">
       <div class="panel-title">Skills</div>
-      <div class="panel-sub">Click × to remove a tag, type + Enter to add one.</div>
+      <div class="panel-sub">Click a skill chip to edit its name and hover tooltip. Click × to remove.</div>
       <div id="skills-panel"></div>
+    </div>
+
+    <!-- COURSEWORK -->
+    <div class="panel" id="panel-coursework">
+      <div class="panel-title">Coursework</div>
+      <div class="panel-sub">Drag the ⠿ handle to reorder. Edit course codes, names, and descriptions.</div>
+      <div id="coursework-list"></div>
+      <button class="btn add" onclick="addCourse()">+ Add Course</button>
     </div>
 
     <!-- NOW -->
@@ -115,14 +204,6 @@
       </div>
     </div>
 
-    <!-- COURSEWORK -->
-    <div class="panel" id="panel-coursework">
-      <div class="panel-title">Coursework</div>
-      <div class="panel-sub">Edit the course codes, names, and descriptions shown in the Coursework section.</div>
-      <div id="coursework-list"></div>
-      <button class="btn add" onclick="addCourse()">+ Add Course</button>
-    </div>
-
     <!-- CONTACT -->
     <div class="panel" id="panel-contact">
       <div class="panel-title">Contact</div>
@@ -132,13 +213,26 @@
       <div class="field"><label>LinkedIn URL/handle</label><input type="text" id="contact-linkedin"></div>
     </div>
 
-
   </main>
- </div>
- </div>
- 
+</div>
+</div>
 
- <script src="assets/js/admin.js"></script>
+<script>
+// Inject rich text toolbars after DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  ['about-p1','about-p2','about-p3'].forEach(id => {
+    const ta = document.getElementById(id);
+    if (!ta) return;
+    const toolbar = document.createElement('div');
+    toolbar.className = 'richtxt-toolbar';
+    toolbar.innerHTML = `<button class="richtxt-btn" title="Bold" onclick="applyRichText('${id}','b')"><strong>B</strong></button>
+      <button class="richtxt-btn" title="Italic" onclick="applyRichText('${id}','i')"><em>I</em></button>
+      <span class="richtxt-hint">Select text then B/I</span>`;
+    ta.parentElement.insertBefore(toolbar, ta);
+  });
+});
+</script>
+<script src="assets/js/admin.js"></script>
 
 </body>
- </html>
+</html>

@@ -226,3 +226,61 @@
 
   /* DIVIDER */
   .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  /* DRAG & DROP */
+  .dnd-handle {
+    color: var(--muted2); cursor: grab; font-size: 0.9rem;
+    padding: 0 0.25rem; user-select: none; flex-shrink: 0;
+  }
+  .dnd-handle:active { cursor: grabbing; }
+  .item-card.dnd-dragging { opacity: 0.35; }
+  .item-card.dnd-over { border-color: var(--accent); box-shadow: 0 0 0 2px oklch(0.40 0.14 195 / 0.18); }
+
+  /* RICH TEXT TOOLBAR */
+  .richtxt-toolbar { display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.3rem; }
+  .richtxt-btn {
+    font-family: var(--mono); font-size: 0.7rem;
+    padding: 0.18rem 0.55rem; border: 1px solid var(--border-h);
+    background: none; color: var(--text); cursor: pointer; transition: all 0.15s;
+  }
+  .richtxt-btn:hover { background: var(--text); color: var(--bg); }
+  .richtxt-hint { font-family: var(--mono); font-size: 0.58rem; color: var(--muted2); }
+
+  /* INLINE CONFIRM */
+  .inline-confirm {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;
+    margin-top: 0.6rem; padding: 0.5rem 0.75rem;
+    background: oklch(0.50 0.18 25 / 0.06);
+    border: 1px solid oklch(0.50 0.18 25 / 0.25);
+  }
+  .inline-confirm-msg { font-family: var(--mono); font-size: 0.68rem; color: var(--danger); flex: 1; min-width: 120px; }
+
+  /* STAT ROW (spotlight stats + hero metrics) */
+  .stat-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem; }
+  .stat-row input { flex: 1; }
+  .stat-row input:first-of-type { max-width: 110px; }
+  .stat-row-header { font-family: var(--mono); font-size: 0.6rem; color: var(--muted2);
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .stat-row-header span:first-child { width: 110px; flex-shrink: 0; }
+
+  /* TERMINAL LINE EDITOR */
+  .terminal-line-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.3rem; }
+  .terminal-line-row select {
+    font-family: var(--mono); font-size: 0.65rem; padding: 0.35rem 0.4rem;
+    border: 1px solid var(--border-h); background: var(--surface); color: var(--text);
+    outline: none; width: 82px; flex-shrink: 0;
+  }
+  .terminal-line-row input {
+    flex: 1; font-family: var(--mono); font-size: 0.75rem;
+    padding: 0.35rem 0.5rem; border: 1px solid var(--border-h);
+    background: var(--surface); color: var(--text); outline: none;
+  }
+  .terminal-line-row input:focus { border-color: var(--accent); }
+
+  /* FIELD SELECT */
+  .field select {
+    width: 100%; background: var(--surface); border: 1px solid var(--border-h);
+    color: var(--text); font-family: var(--font); font-size: 0.9rem;
+    padding: 0.65rem 0.85rem; outline: none;
+  }
+  .field select:focus { border-color: var(--accent); }

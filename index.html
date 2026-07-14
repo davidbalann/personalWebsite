@@ -61,12 +61,12 @@
 
 <!-- HERO -->
 <section id="hero">
-  <h1 class="hero-name">David<br><span>Balan.</span></h1>
+  <h1 class="hero-name" id="hero-name-el">David<br><span>Balan.</span></h1>
   <div class="hero-typing">
     <span class="typing-prefix">currently working with</span>
     <span class="typing-word" id="typing-word"></span><span class="typing-cursor"></span>
   </div>
-  <div class="hero-ctas" style="margin-top:1.5rem;">
+  <div class="hero-ctas" id="hero-ctas" style="margin-top:1.5rem;">
     <div class="hero-cta-col">
       <a href="#projects" class="btn btn-primary">View Projects</a>
       <a href="https://buymeacoffee.com/davidbalan" class="btn btn-coffee" target="_blank" rel="noopener noreferrer">Buy me a coffee</a>
@@ -75,7 +75,7 @@
   </div>
 
 
-  <div class="hero-metrics">
+  <div class="hero-metrics" id="hero-metrics">
     <div class="metric">
       <div class="metric-val">3.72</div>
       <div class="metric-label">GPA / 4.30</div>
@@ -166,9 +166,9 @@
     <div class="spotlight-content">
       <div>
         <div class="spotlight-badge">★ Featured Project</div>
-        <div class="spotlight-name">CleanShare</div>
-        <p class="spotlight-desc">Desktop app that detects and blurs sensitive content — alcohol, licence plates — from images using a custom-trained YOLOv11 model and a hybrid C++/Python inference pipeline. Trained on ~1,000 annotated images; processes 1080p in ~5s on CPU-only hardware.</p>
-        <div class="project-stack" style="margin-bottom:0;">
+        <div class="spotlight-name" id="sp-name">CleanShare</div>
+        <p class="spotlight-desc" id="sp-desc">Desktop app that detects and blurs sensitive content — alcohol, licence plates — from images using a custom-trained YOLOv11 model and a hybrid C++/Python inference pipeline. Trained on ~1,000 annotated images; processes 1080p in ~5s on CPU-only hardware.</p>
+        <div class="project-stack" id="sp-stack" style="margin-bottom:0;">
           <span class="tag accent">C++</span>
           <span class="tag accent">Qt</span>
           <span class="tag">OpenCV</span>
@@ -177,9 +177,9 @@
           <span class="tag">CMake</span>
         </div>
       </div>
-      <div class="project-outcome" style="margin-top:1.5rem;">~80% detection accuracy · 1080p in ~5s on CPU · packaged for Windows</div>
+      <div class="project-outcome" id="sp-outcome" style="margin-top:1.5rem;">~80% detection accuracy · 1080p in ~5s on CPU · packaged for Windows</div>
     </div>
-    <div class="spotlight-panel">
+    <div class="spotlight-panel" id="spotlight-stats-panel">
       <div class="spotlight-stat">
         <div class="spotlight-stat-val">~1k</div>
         <div class="spotlight-stat-label">Training images</div>
@@ -197,7 +197,7 @@
     </div>
   </div>
 
-  <div class="project-grid">
+  <div class="project-grid" id="project-grid">
 
     <!-- FEATURED -->
     <div class="project-card featured reveal" style="position:relative;">
@@ -322,7 +322,7 @@
 
   <div class="exp-timeline">
     <div class="exp-timeline-spine"></div>
-    <div class="exp-tgrid">
+    <div class="exp-tgrid" id="exp-tgrid">
       <div class="exp-tdate reveal">May – July 2025<div class="exp-tdot"></div></div>
       <div class="exp-tcontent reveal reveal-delay-1">
         <div class="exp-role">Firmware Developer Intern</div>
