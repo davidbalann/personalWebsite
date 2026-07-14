@@ -862,7 +862,7 @@ function confirmResetAll() {
 
 async function load() {
   try {
-    const r = await fetch('/api/load');
+    const r = await fetch('/api/load', { cache: 'no-store' });
     if (r.ok) {
       data = await r.json();
       if (!data.hero) data.hero = deepCopy(DEFAULTS.hero);

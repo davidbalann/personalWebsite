@@ -240,7 +240,7 @@ typeLoop();
   const stored = localStorage.getItem(STORE);
   if (stored) applyData(JSON.parse(stored));
 
-  fetch('/api/load')
+  fetch('/api/load', { cache: 'no-store' })
     .then(res => res.json())
     .then(data => applyData(data));
 })();

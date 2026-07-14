@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
     }
 
     const json = await upstream.json();
-    res.setHeader('Cache-Control', 'public, max-age=60');
+    res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json(json?.record ?? json);
   } catch (err) {
     return res.status(500).json({ error: 'Failed to load data' });
