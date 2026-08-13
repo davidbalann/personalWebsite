@@ -102,9 +102,10 @@ typeLoop();
       if (a.languages && a.languages.length) {
         const langFlagsEl = document.querySelector('.lang-flags');
         if (langFlagsEl) {
-          langFlagsEl.innerHTML = a.languages.map(l =>
-            `<div class="lang-flag"><span class="flag flag-${escAttr(l.flag)}" role="img" aria-label="${escAttr(l.name)}"></span> ${escAttr(l.name)} <span class="lang-level">${escAttr(l.level)}</span></div>`
-          ).join('');
+            langFlagsEl.innerHTML = a.languages.map(l => {
+            const code = (l.flag || '').trim().toLowerCase();
+            return `<div class="lang-flag"><span class="flag" style="background-image:url('https://flagcdn.com/${escAttr(code)}.svg')" role="img" aria-label="${escAttr(l.name)}"></span> ${escAttr(l.name)} <span class="lang-level">${escAttr(l.level)}</span></div>`;
+            }).join('');
         }
       }
     }
