@@ -281,7 +281,7 @@
 
   /* TERMINAL LINE EDITOR */
   .terminal-line-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.3rem; }
-  .terminal-line-row select {
+  .field .terminal-line-row select {
     font-family: var(--mono); font-size: 0.65rem; padding: 0.35rem 0.4rem;
     border: 1px solid var(--border-h); background: var(--surface); color: var(--text);
     outline: none; width: 82px; flex-shrink: 0;
