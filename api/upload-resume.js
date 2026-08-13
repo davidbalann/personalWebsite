@@ -59,6 +59,7 @@ module.exports = async function handler(req, res) {
     });
     return res.status(200).json({ url: blob.url });
   } catch (err) {
-    return res.status(500).json({ error: 'Failed to upload resume' });
-  }
+      console.error('upload-resume error:', err);
+      return res.status(500).json({ error: 'Failed to upload resume', detail: String(err?.message || err) });
+    }
 };
