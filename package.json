@@ -1,0 +1,7 @@
+{
+  "name": "personal-website-api",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "^0.27.0"
+  }
+}

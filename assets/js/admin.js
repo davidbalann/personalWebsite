@@ -960,6 +960,34 @@ async function saveAll() {
   setTimeout(() => { s.classList.remove('show'); s.textContent = '✓ Saved'; }, 3000);
 }
 
+async function uploadResume() {
+  const fileInput = document.getElementById('resume-file-input');
+  const statusEl = document.getElementById('resume-upload-status');
+  const file = fileInput.files[0];
+  if (!file) { statusEl.textContent = 'Choose a PDF first.'; return; }
+  if (file.type !== 'application/pdf') { statusEl.textContent = 'File must be a PDF.'; return; }
+  if (!token) { statusEl.textContent = 'Not authenticated.'; return; }
+
+  statusEl.textContent = 'Uploading…';
+  try {
+    const r = await fetch('/api/upload-resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/pdf', 'Authorization': `Bearer ${token}` },
+      body: file
+    });
+    if (!r.ok) { statusEl.textContent = '⚠ Upload failed.'; return; }
+    const j = await r.json();
+    document.getElementById('hero-cta-ghost-link').value = j.url;
+    data.hero.ctaGhost = data.hero.ctaGhost || {};
+    data.hero.ctaGhost.link = j.url;
+    statusEl.textContent = '✓ Uploaded — click Save All to publish.';
+    fileInput.value = '';
+  } catch (e) {
+    statusEl.textContent = '⚠ Upload failed (network error).';
+  }
+}
+window.uploadResume = uploadResume;
+
 // Expose globals
 window.tryLogin = tryLogin;
 window.switchPanel = switchPanel;

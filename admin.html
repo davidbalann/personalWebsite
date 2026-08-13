@@ -107,6 +107,17 @@
         <div class="field"><label>Ghost button text</label><input type="text" id="hero-cta-ghost-text" placeholder="Download CV"></div>
         <div class="field"><label>Ghost button link / file</label><input type="text" id="hero-cta-ghost-link" placeholder="David_Balan_CV.pdf"></div>
       </div>
+        <div class="field-row">
+  <div class="field">
+    <label>Replace resume PDF</label>
+    <input type="file" id="resume-file-input" accept="application/pdf">
+  </div>
+  <div class="field">
+    <label>&nbsp;</label>
+    <button class="btn add" type="button" onclick="uploadResume()">Upload &amp; Replace</button>
+    <div id="resume-upload-status" style="font-family:var(--mono);font-size:0.7rem;color:var(--muted);margin-top:0.5rem;"></div>
+  </div>
+</div>
     </div>
 
     <!-- ABOUT -->
