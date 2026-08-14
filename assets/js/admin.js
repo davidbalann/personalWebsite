@@ -34,7 +34,7 @@ const DEFAULTS = {
   },
   projects: [
     {
-      name: "CleanShare", link: "https://github.com/davidbalann/cleanshare", featured: true,
+      name: "CleanShare", links: [{ label: 'GitHub', url: 'https://github.com/davidbalann/cleanshare' }], featured: true,
       desc: "Desktop application that detects and blurs sensitive content (alcohol, licence plates) from images using YOLOv11 and ONNX Runtime. Trained on ~1,000 annotated images. Processes 1080p images in ~5 seconds on CPU-only hardware.",
       stack: ["C++", "Qt", "OpenCV", "YOLOv11", "ONNX Runtime", "CMake", "Inno Setup"],
       challenge: "Discovered PyTorch → ONNX export inconsistencies mid-project. Implemented a hybrid C++/Python bridge: images pipe from C++ to a Python inference script, bounding boxes return via a temp JSON file — restoring reliable detections without rewriting the Qt pipeline.",
@@ -58,7 +58,7 @@ const DEFAULTS = {
       ]
     },
     {
-      name: "CoffeeBot Firmware", link: "", featured: false,
+      name: "CoffeeBot Firmware", links: [], featured: false,
       desc: "Firmware for an ESP32 microcontroller monitoring coffee machine usage via an amp sensor. Samples every second, transmits aggregated state over Wi-Fi to a WLAN server every ~5 seconds — networked displays render real-time usage.",
       stack: ["C++", "ESP32", "I²C", "Wi-Fi", "State Machine"],
       challenge: "Tight memory constraints from the display footprint on the ESP32 — optimised buffer usage and eliminated dynamic allocations to achieve a stable system with near-zero incorrect state displays.",
@@ -67,7 +67,7 @@ const DEFAULTS = {
       stats: [], terminal: []
     },
     {
-      name: "Kingston CareMap", link: "", featured: false,
+      name: "Kingston CareMap", links: [], featured: false,
       desc: "Low-data mobile app for Kingston helping users find essential services and food resources under real constraints — limited connectivity, low battery, time pressure. Dual navigation: interactive map + list fallback with need-based filtering.",
       stack: ["React", "FastAPI", "Python", "MySQL", "Docker"],
       challenge: "Designing a friction-reduction flow that minimises dead ends from stale data — prioritised verified listings, displayed last-updated timestamps, and flagged uncertain details with explicit warnings.",
@@ -76,7 +76,7 @@ const DEFAULTS = {
       stats: [], terminal: []
     },
     {
-      name: "FaceCrypt", link: "", featured: false,
+      name: "FaceCrypt", links: [], featured: false,
       desc: "Locally-running biometric encryption tool that uses face detection as a gate to protect sensitive files. Simple Tkinter GUI manages encrypted files and the unlock flow — from idea to demo in 36 hours.",
       stack: ["Python", "OpenCV", "face_recognition", "Tkinter", "AES"],
       challenge: "Deriving a stable, deterministic encryption key from a high-dimensional face embedding that remains consistent under varying lighting and pose conditions.",
@@ -354,6 +354,37 @@ function deleteTerminalLine(projIdx, li) {
   refreshTerminalLines(projIdx);
 }
 
+// ── PROJECT LINKS ──
+const PROJECT_LINK_PRESETS = ['GitHub', 'Live Demo', 'Video Demo', 'Devpost / Writeup', 'Docs'];
+function projectLinkHtml(projIdx, li, link) {
+  const isCustom = !PROJECT_LINK_PRESETS.includes(link.label);
+  const options = PROJECT_LINK_PRESETS.map(p =>
+    `<option value="${escHtml(p)}"${!isCustom && link.label === p ? ' selected' : ''}>${escHtml(p)}</option>`
+  ).join('') + `<option value="__custom__"${isCustom ? ' selected' : ''}>Custom…</option>`;
+  return `<div class="terminal-line-row">
+    <select onchange="onProjectLinkTypeChange(${projIdx},${li},this.value)">${options}</select>
+    ${isCustom ? `<input type="text" placeholder="Custom label" value="${escHtml(link.label)}" style="flex:0 0 130px;" oninput="data.projects[${projIdx}].links[${li}].label=this.value">` : ''}
+    <input type="text" placeholder="https://…" value="${escHtml(link.url)}" oninput="data.projects[${projIdx}].links[${li}].url=this.value">
+    <button class="bullet-del" onclick="deleteProjectLink(${projIdx},${li})">×</button>
+  </div>`;
+}
+function refreshProjectLinks(projIdx) {
+  const el = document.getElementById(`project-links-${projIdx}`);
+  if (el) el.innerHTML = (data.projects[projIdx].links || []).map((l, li) => projectLinkHtml(projIdx, li, l)).join('');
+}
+function onProjectLinkTypeChange(projIdx, li, value) {
+  data.projects[projIdx].links[li].label = value === '__custom__' ? '' : value;
+  refreshProjectLinks(projIdx);
+}
+function addProjectLink(projIdx) {
+  (data.projects[projIdx].links = data.projects[projIdx].links || []).push({ label: 'GitHub', url: '' });
+  refreshProjectLinks(projIdx);
+}
+function deleteProjectLink(projIdx, li) {
+  data.projects[projIdx].links.splice(li, 1);
+  refreshProjectLinks(projIdx);
+}
+
 // ── SPOTLIGHT STATS ──
 function statsHtml(projIdx, stats) {
   return (stats || []).map((s, si) => `
@@ -470,9 +501,13 @@ function renderProjectsList() {
         <span class="item-card-chevron">›</span>
       </div>
       <div class="item-card-body">
-        <div class="field-row">
-          <div class="field"><label>Name</label><input type="text" value="${escHtml(p.name)}" oninput="data.projects[${i}].name=this.value;document.getElementById('proj-name-${i}').textContent=this.value||'Untitled'"></div>
-          <div class="field"><label>Link (GitHub / demo URL)</label><input type="text" value="${escHtml(p.link || '')}" oninput="data.projects[${i}].link=this.value" placeholder="https://github.com/…"></div>
+        <div class="field">
+          <label>Name</label><input type="text" value="${escHtml(p.name)}" oninput="data.projects[${i}].name=this.value;document.getElementById('proj-name-${i}').textContent=this.value||'Untitled'">
+        </div>
+        <div class="field">
+          <label>Links</label>
+          <div id="project-links-${i}">${(p.links || []).map((l, li) => projectLinkHtml(i, li, l)).join('')}</div>
+          <button class="btn add" style="margin-top:0.4rem" onclick="addProjectLink(${i})">+ Add Link</button>
         </div>
         <div class="field" style="display:flex;align-items:center;gap:0.75rem;">
           <label style="margin:0;white-space:nowrap;">Featured spotlight</label>
@@ -509,7 +544,7 @@ function setFeatured(i, val) {
   if (card) card.classList.add('open');
 }
 function addProject() {
-  (data.projects = data.projects || []).push({ name: 'New Project', link: '', featured: false, desc: '', stack: [], challenge: '', outcome: '', hindsight: '', stats: [], terminal: [] });
+  (data.projects = data.projects || []).push({ name: 'New Project', links: [], featured: false, desc: '', stack: [], challenge: '', outcome: '', hindsight: '', stats: [], terminal: [] });
   renderProjectsList();
   const cards = document.querySelectorAll('#projects-list .item-card');
   if (cards.length) cards[cards.length - 1].classList.add('open');
@@ -887,7 +922,8 @@ async function load() {
           ...DEFAULTS.projects[i] ? { stats: DEFAULTS.projects[i].stats, terminal: DEFAULTS.projects[i].terminal } : {},
           ...p,
           stats: p.stats || [],
-          terminal: p.terminal || []
+          terminal: p.terminal || [],
+          links: p.links || (p.link ? [{ label: 'GitHub', url: p.link }] : [])
         }));
       }
       if (!data.experience?.length) data.experience = deepCopy(DEFAULTS.experience);
@@ -1001,6 +1037,7 @@ window.addLanguage = addLanguage; window.deleteLanguage = deleteLanguage;
 window.addProject = addProject; window.deleteProject = deleteProject; window.setFeatured = setFeatured;
 window.addStat = addStat; window.deleteStat = deleteStat;
 window.addTerminalLine = addTerminalLine; window.deleteTerminalLine = deleteTerminalLine;
+window.addProjectLink = addProjectLink; window.deleteProjectLink = deleteProjectLink; window.onProjectLinkTypeChange = onProjectLinkTypeChange;
 window.addExperience = addExperience; window.deleteExperience = deleteExperience;
 window.addBullet = addBullet; window.deleteBullet = deleteBullet;
 window.addTag = addTag; window.removeTag = removeTag;

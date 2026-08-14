@@ -997,6 +997,33 @@
     }
     .project-link:hover { text-decoration: underline; }
 
+  .project-links {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .project-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+    padding: 0.35rem 0.7rem;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .project-links a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   /* ── PROJECT HINDSIGHT OVERLAY ── */
   .project-card { overflow: hidden; }
   .project-hindsight {

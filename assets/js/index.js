@@ -141,6 +141,9 @@ typeLoop();
         grid.innerHTML = d.projects.map((p, i) => {
           const isFeatured = p.featured;
           const terminal = isFeatured ? renderTerminalBlock(p.terminal) : '';
+          const linksHtml = (p.links && p.links.length)
+            ? `<div class="project-links">${p.links.map(l => `<a href="${escAttr(l.url)}" target="_blank" rel="noopener noreferrer">${escAttr(l.label)} →</a>`).join('')}</div>`
+            : (p.link ? `<a href="${escAttr(p.link)}" class="project-link" target="_blank" rel="noopener noreferrer">View project →</a>` : '');
           const inner = `
             <div class="project-num">${String(i+1).padStart(2,'0')}${isFeatured ? ' — FEATURED' : ''}</div>
             <h3 class="project-name">${p.name}</h3>
@@ -148,7 +151,7 @@ typeLoop();
             <div class="project-stack">${(p.stack||[]).map(t=>`<span class="tag${isFeatured?' accent':''}">${escAttr(t)}</span>`).join('')}</div>
             <div class="project-challenge"><strong>TECHNICAL CHALLENGE</strong> ${p.challenge}</div>
             <div class="project-outcome">${p.outcome}</div>
-            ${p.link ? `<a href="${escAttr(p.link)}" class="project-link" target="_blank" rel="noopener noreferrer">View project →</a>` : ''}
+            ${linksHtml}
             <div class="project-hindsight">
               <div class="project-hindsight-label">What I'd do differently</div>
               <div class="project-hindsight-text">${p.hindsight}</div>

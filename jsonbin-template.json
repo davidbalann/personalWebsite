@@ -32,7 +32,7 @@
   "projects": [
     {
       "name": "CleanShare",
-      "link": "https://github.com/davidbalann/cleanshare",
+      "links": [{ "label": "GitHub", "url": "https://github.com/davidbalann/cleanshare" }],
       "featured": true,
       "desc": "Desktop application that detects and blurs sensitive content (alcohol, licence plates) from images using YOLOv11 and ONNX Runtime. Trained on ~1,000 annotated images. Processes 1080p images in ~5 seconds on CPU-only hardware.",
       "stack": ["C++", "Qt", "OpenCV", "YOLOv11", "ONNX Runtime", "CMake", "Inno Setup"],
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "name": "CoffeeBot Firmware", "link": "", "featured": false,
+      "name": "CoffeeBot Firmware", "links": [], "featured": false,
       "desc": "Firmware for an ESP32 microcontroller monitoring coffee machine usage via an amp sensor. Samples every second, transmits aggregated state over Wi-Fi to a WLAN server every ~5 seconds — networked displays render real-time usage.",
       "stack": ["C++", "ESP32", "I²C", "Wi-Fi", "State Machine"],
       "challenge": "Tight memory constraints from the display footprint on the ESP32 — optimised buffer usage and eliminated dynamic allocations to achieve a stable system with near-zero incorrect state displays.",
@@ -66,7 +66,7 @@
       "stats": [], "terminal": []
     },
     {
-      "name": "Kingston CareMap", "link": "", "featured": false,
+      "name": "Kingston CareMap", "links": [], "featured": false,
       "desc": "Low-data mobile app for Kingston helping users find essential services and food resources under real constraints — limited connectivity, low battery, time pressure. Dual navigation: interactive map + list fallback with need-based filtering.",
       "stack": ["React", "FastAPI", "Python", "MySQL", "Docker"],
       "challenge": "Designing a friction-reduction flow that minimises dead ends from stale data — prioritised verified listings, displayed last-updated timestamps, and flagged uncertain details with explicit warnings.",
@@ -75,7 +75,7 @@
       "stats": [], "terminal": []
     },
     {
-      "name": "FaceCrypt", "link": "", "featured": false,
+      "name": "FaceCrypt", "links": [], "featured": false,
       "desc": "Locally-running biometric encryption tool that uses face detection as a gate to protect sensitive files. Simple Tkinter GUI manages encrypted files and the unlock flow — from idea to demo in 36 hours.",
       "stack": ["Python", "OpenCV", "face_recognition", "Tkinter", "AES"],
       "challenge": "Deriving a stable, deterministic encryption key from a high-dimensional face embedding that remains consistent under varying lighting and pose conditions.",
