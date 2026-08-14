@@ -5,7 +5,7 @@ const path = require('path');
 // Minimal .env.local loader (no dotenv dependency)
 const envPath = path.join(__dirname, '..', '.env.local');
 if (fs.existsSync(envPath)) {
-  for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+  for (const line of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
     const m = line.match(/^([^#=]+)=(.*)$/);
     if (m) process.env[m[1].trim()] = m[2].trim();
   }

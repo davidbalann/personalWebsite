@@ -248,7 +248,10 @@ typeLoop();
   if (stored) applyData(JSON.parse(stored));
 
   fetch('/api/load', { cache: 'no-store' })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`API returned ${res.status}`);
+      return res.json();
+    })
     .then(data => applyData(data))
     .catch(err => console.warn('Failed to load live data, showing cached copy:', err));
 })();
