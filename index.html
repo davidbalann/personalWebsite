@@ -7,12 +7,13 @@
 <meta name="description" content="David Balan — Computer Science student at Queen's University specialising in AI. Systems programming, embedded firmware, computer vision, full-stack.">
   <meta property="og:title" content="David Balan | Software | AI Engineer">
   <meta property="og:description" content="Portfolio showcasing embedded systems, AI, and full-stack projects.">
-  <meta property="og:image" content="https://www.davidbalan.dev/og-image.png">
+  <meta property="og:image" content="https://www.davidbalan.dev/api/og?title=David%20Balan&subtitle=CS%20%C2%B7%20AI%20Specialisation%20%C2%B7%20Firmware%20%C2%B7%20Full-Stack">
   <meta property="og:url" content="https://www.davidbalan.dev/">
   <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="David Balan — Software | AI">
 <meta name="twitter:description" content="CS @ Queen's University · AI Specialisation · Firmware · CV · Full-Stack">
+<meta name="twitter:image" content="https://www.davidbalan.dev/api/og?title=David%20Balan&subtitle=CS%20%C2%B7%20AI%20Specialisation%20%C2%B7%20Firmware%20%C2%B7%20Full-Stack">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="manifest" href="/site.webmanifest">
@@ -59,6 +60,25 @@
 <div id="back-top" title="Back to top">↑</div>
 <div id="copy-toast">Email copied</div>
 
+<!-- NOW PLAYING (Spotify) — fixed popup widget, bottom-right -->
+<div id="now-playing" class="now-playing-widget" style="display:none;">
+  <div class="np-panel" id="np-panel">
+    <div class="np-panel-header">
+      <span>Recently played</span>
+      <button class="np-close" id="np-close" aria-label="Close">×</button>
+    </div>
+    <div class="np-list" id="np-list"></div>
+  </div>
+  <button class="np-toggle" id="np-toggle" type="button">
+    <div class="np-toggle-art"><img id="np-toggle-art" src="" alt=""></div>
+    <div class="np-toggle-info">
+      <div class="np-toggle-label" id="np-toggle-label">NOW PLAYING</div>
+      <div class="np-toggle-title" id="np-toggle-title"></div>
+    </div>
+    <span class="np-chevron">▾</span>
+  </button>
+</div>
+
 <!-- HERO -->
 <section id="hero">
   <h1 class="hero-name" id="hero-name-el">David<br><span>Balan.</span></h1>
@@ -66,6 +86,7 @@
     <span class="typing-prefix">currently working with</span>
     <span class="typing-word" id="typing-word"></span><span class="typing-cursor"></span>
   </div>
+
   <div class="hero-ctas" id="hero-ctas" style="margin-top:1.5rem;">
     <div class="hero-cta-col">
       <a href="#projects" class="btn btn-primary">View Projects</a>
@@ -455,8 +476,31 @@
     <div class="section-label">Contact</div>
     <h2 class="section-title">Let's talk.</h2>
     <p class="section-sub" style="margin-top:0.5rem; margin-bottom:2rem;">Open to internships, research, and interesting problems.</p>
-    <a href="mailto:davidbalann@icloud.com" class="contact-email-big" id="contact-email-el">davidbalann@icloud.com</a>
-    <a href="/api/resume" download="David_Balan_Resume.pdf" class="cv-download">
+
+    <form class="contact-form" id="contact-form" style="max-width:480px; margin-bottom:2rem;">
+      <div class="form-field">
+        <label for="cf-name">Name</label>
+        <input type="text" id="cf-name" name="name" required autocomplete="name">
+      </div>
+      <div class="form-field">
+        <label for="cf-email">Email</label>
+        <input type="email" id="cf-email" name="email" required autocomplete="email">
+      </div>
+      <div class="form-field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" required></textarea>
+      </div>
+      <!-- Honeypot: hidden from real visitors, bots that fill every field trip it -->
+      <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" aria-hidden="true">
+        <label for="cf-company">Company</label>
+        <input type="text" id="cf-company" name="company" tabindex="-1" autocomplete="off">
+      </div>
+      <input type="hidden" id="cf-ts" name="ts">
+      <button type="submit" class="btn btn-primary" id="cf-submit" style="width:fit-content;">Send Message</button>
+      <div id="cf-status" style="font-family:var(--mono); font-size:0.75rem; color:var(--muted); margin-top:0.25rem;"></div>
+    </form>
+
+    <a href="/api/resume" download="David_Balan_Resume.pdf" class="cv-download" style="margin-top:0; margin-bottom:2rem; padding:0.8rem 1.4rem; gap:0.75rem;">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
         <path d="M6 1v7M3 6l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>

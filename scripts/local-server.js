@@ -32,6 +32,11 @@ const apiHandlers = {
   '/api/login': require(path.join(ROOT, 'api', 'login.js')),
   '/api/upload-resume': require(path.join(ROOT, 'api', 'upload-resume.js')),
   '/api/resume': require(path.join(ROOT, 'api', 'resume.js')),
+  '/api/contact': require(path.join(ROOT, 'api', 'contact.js')),
+  '/api/now-playing': require(path.join(ROOT, 'api', 'now-playing.js')),
+  // api/og.jsx is NOT included here — it's a Vercel Edge Function (ESM,
+  // Web-standard Request/Response), incompatible with this Node http server's
+  // req/res model. Test it after deploying to Vercel instead.
 };
 
 const server = http.createServer(async (req, res) => {

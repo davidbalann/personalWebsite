@@ -382,3 +382,102 @@ document.getElementById('tweak-status').addEventListener('change', function() {
   if (el) el.innerHTML = `<div class="status-dot"></div>${this.value}`;
   window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { statusText: this.value } }, '*');
 });
+
+// Contact form
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  const cfTs = document.getElementById('cf-ts');
+  if (cfTs) cfTs.value = Date.now();
+
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const statusEl = document.getElementById('cf-status');
+    const submitBtn = document.getElementById('cf-submit');
+    const payload = {
+      name: document.getElementById('cf-name').value,
+      email: document.getElementById('cf-email').value,
+      message: document.getElementById('cf-message').value,
+      company: document.getElementById('cf-company').value,
+      ts: document.getElementById('cf-ts').value,
+    };
+
+    submitBtn.disabled = true;
+    statusEl.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok) {
+        statusEl.textContent = '✓ Message sent — thanks, I\'ll get back to you soon.';
+        contactForm.reset();
+        if (cfTs) cfTs.value = Date.now();
+      } else {
+        statusEl.textContent = '⚠ ' + (j.error || 'Something went wrong — try emailing directly.');
+      }
+    } catch (err) {
+      statusEl.textContent = '⚠ Network error — try emailing directly.';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+// Now playing (Spotify) — popup widget with recent history
+let npOpen = false;
+const npEsc = (s) => String(s || '')
+  .replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+  .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+async function updateNowPlaying() {
+  const widget = document.getElementById('now-playing');
+  if (!widget) return;
+  try {
+    const r = await fetch('/api/now-playing', { cache: 'no-store' });
+    const data = await r.json();
+    const items = (data && data.items) || [];
+    if (!items.length) { widget.style.display = 'none'; return; }
+
+    widget.style.display = 'block';
+    widget.classList.toggle('is-playing', !!data.isPlaying);
+
+    const last = items[items.length - 1];
+    document.getElementById('np-toggle-art').src = last.albumArt || '';
+    document.getElementById('np-toggle-title').textContent = last.title;
+    document.getElementById('np-toggle-label').textContent = data.isPlaying ? 'NOW PLAYING' : 'LAST PLAYED';
+
+    const list = document.getElementById('np-list');
+    list.innerHTML = items.map((it, i) => {
+      const isCurrent = i === items.length - 1;
+      return `<a href="${npEsc(it.songUrl || '#')}" target="_blank" rel="noopener noreferrer" class="np-item${isCurrent ? ' np-current' : ''}">
+        <img src="${npEsc(it.albumArt || '')}" alt="">
+        <div class="np-item-info">
+          <div class="np-item-title">${npEsc(it.title)}</div>
+          <div class="np-item-artist">${npEsc(it.artist)}</div>
+        </div>
+      </a>`;
+    }).join('');
+
+    if (npOpen) list.scrollTop = list.scrollHeight;
+  } catch (err) {
+    widget.style.display = 'none';
+  }
+}
+updateNowPlaying();
+setInterval(updateNowPlaying, 30000);
+
+document.getElementById('np-toggle')?.addEventListener('click', () => {
+  npOpen = !npOpen;
+  document.getElementById('now-playing').classList.toggle('open', npOpen);
+  if (npOpen) {
+    const list = document.getElementById('np-list');
+    if (list) list.scrollTop = list.scrollHeight;
+  }
+});
+document.getElementById('np-close')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  npOpen = false;
+  document.getElementById('now-playing').classList.remove('open');
+});
