@@ -67,6 +67,9 @@ typeLoop();
           </div>
           ${g.text ? `<a href="${escAttr(g.link||'David_Balan_CV.pdf')}" download class="btn btn-ghost">${escAttr(g.text)}</a>` : ''}`;
       }
+      const cvEl = document.getElementById('cv-download-el');
+      if (cvEl && h.ctaGhost && h.ctaGhost.link)
+      cvEl.href = h.ctaGhost.link;
     }
 
     // About
