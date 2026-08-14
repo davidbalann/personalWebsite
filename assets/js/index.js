@@ -249,7 +249,8 @@ typeLoop();
 
   fetch('/api/load', { cache: 'no-store' })
     .then(res => res.json())
-    .then(data => applyData(data));
+    .then(data => applyData(data))
+    .catch(err => console.warn('Failed to load live data, showing cached copy:', err));
 })();
 
 // Copy email on click
