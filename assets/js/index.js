@@ -65,7 +65,7 @@ typeLoop();
             ${p.text ? `<a href="${escAttr(p.link||'#projects')}" class="btn btn-primary">${escAttr(p.text)}</a>` : ''}
             ${c.text && c.enabled !== false ? `<a href="${escAttr(c.link||'#')}" class="btn btn-coffee" target="_blank" rel="noopener noreferrer">${escAttr(c.text)}</a>` : ''}
           </div>
-          ${g.text ? `<a href="/api/resume" download="David_Balan_Resume.pdf" class="btn btn-ghost">${escAttr(g.text)}</a>` : ''};
+          ${g.text ? `<a href="/api/resume" download="David_Balan_Resume.pdf" class="btn btn-ghost">${escAttr(g.text)}</a>` : ''}`;
       }
       const cvEl = document.getElementById('cv-download-el');
       if (cvEl && h.ctaGhost && h.ctaGhost.link)
